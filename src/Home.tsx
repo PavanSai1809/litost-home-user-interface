@@ -18,27 +18,32 @@ interface Section {
 
 interface SocialMediaLink {
   id: number;
+  platformName: string;
   url: string;
-  icon: string;
 }
 
-interface ContactDetails {
-  address: string;
-  phone: string;
-  email: string;
+interface ContactDetail {
+  id: number;
+  contactType: string;
+  value: string;
 }
 
 interface Footer {
   about: string;
-  contact_details: ContactDetails;
   social_media_links: SocialMediaLink[];
+  contact_details: ContactDetail[];
 }
 
 const HomePage: React.FC = () => {
   const [sections, setSections] = useState<Section[]>([]);
-  const [footer, setFooter] = useState<Footer[]>([]);
+  const [footer, setFooter] = useState<Footer | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const [activeLink, setActiveLink] = useState('home');
+
+  const handleLinkClick = (link: string) => {
+    setActiveLink(link);
+  };
 
   // Static banner images
   const bannerImageNames = [
@@ -52,16 +57,21 @@ const HomePage: React.FC = () => {
     'https://lentoindia.com/assets/admin/uploads/Which_inverter_is_best_for_200ah_battery.png',
     'https://lentoindia.com/assets/admin/uploads/Best_Solar_Panels_for_Distributors_High_Efficiency_and_Durability.jpg',
     'https://lentoindia.com/assets/admin/uploads/Which_inverter_is_best_for_200ah_battery.png',
-  
+
   ];
 
   const valuePropositions: string[] = [
     'https://lentoindia.com/assets/quality-control.png',
     'https://lentoindia.com/assets/customer-service1.png',
     'https://lentoindia.com/assets/ideaw.png',
-  
   ];
-  
+
+  const testimonials: string[] = [
+    'https://lentoindia.com/assets/support.png',
+    'https://www.agilitypr.com/wp-content/uploads/2017/09/clients-1.jpg',
+    'https://ezranking.s3.eu-west-2.amazonaws.com/blog/wp-content/uploads/2021/01/27074723/Handle-Big-Clients-Successfully.jpg',
+  ];
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -74,7 +84,7 @@ const HomePage: React.FC = () => {
       const footerData = await footerResponse.json();
 
       setSections(sectionsData?.result || []);
-      setFooter(footerData || []);
+      setFooter(footerData?.result || null);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -113,14 +123,6 @@ const HomePage: React.FC = () => {
   const featuredSection = sections.find((section) => section.sectionName === "Featured Products");
   const whyChooseUsSection = sections.find((section) => section.sectionName === "Why Choose us");
   const testimonialsSection = sections.find((section) => section.sectionName === "Testimonials");
-  // const socialMediaLinks = footer.social_media_links.filter(
-  //   (social) => social.sectionId === 5
-  // );
-  
-  // // Filter contact details by sectionId === 5
-  // const contactDetails = footer.contact_details.filter(
-  //   (contact) => contact.sectionId === 5
-  // );
 
   const combinedHeroContent = heroSection?.content.map((item: any, index: number) => {
     const randomIndex = Math.floor(Math.random() * bannerImageNames.length);
@@ -133,6 +135,92 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      <nav className="bg-gray-800 text-white py-4 sticky top-0 z-50 shadow-md">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <div className="text-2xl font-bold text-green-500">
+            <a
+              href="#home"
+              className="transition duration-300 ease-in-out hover:text-green-600"
+              onClick={() => handleLinkClick('home')}
+            >
+              Lento
+            </a>
+          </div>
+          <ul className="flex space-x-8">
+            <li>
+              <a
+                href="#home"
+                className={`text-lg transition duration-300 ease-in-out ${activeLink === 'home' ? 'text-green-400' : 'hover:text-green-400'
+                  }`}
+                onClick={() => handleLinkClick('home')}
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="#company"
+                className={`text-lg transition duration-300 ease-in-out ${activeLink === 'company' ? 'text-green-400' : 'hover:text-green-400'
+                  }`}
+                onClick={() => handleLinkClick('company')}
+              >
+                Company
+              </a>
+            </li>
+            <li>
+              <a
+                href="#products"
+                className={`text-lg transition duration-300 ease-in-out ${activeLink === 'products' ? 'text-green-400' : 'hover:text-green-400'
+                  }`}
+                onClick={() => handleLinkClick('products')}
+              >
+                Products
+              </a>
+            </li>
+            <li>
+              <a
+                href="#blog"
+                className={`text-lg transition duration-300 ease-in-out ${activeLink === 'blog' ? 'text-green-400' : 'hover:text-green-400'
+                  }`}
+                onClick={() => handleLinkClick('blog')}
+              >
+                Blog
+              </a>
+            </li>
+            <li>
+              <a
+                href="#events"
+                className={`text-lg transition duration-300 ease-in-out ${activeLink === 'events' ? 'text-green-400' : 'hover:text-green-400'
+                  }`}
+                onClick={() => handleLinkClick('events')}
+              >
+                Events
+              </a>
+            </li>
+            <li>
+              <a
+                href="#brands"
+                className={`text-lg transition duration-300 ease-in-out ${activeLink === 'brands' ? 'text-green-400' : 'hover:text-green-400'
+                  }`}
+                onClick={() => handleLinkClick('brands')}
+              >
+                Our Brands
+              </a>
+            </li>
+            <li>
+              <a
+                href="#contact"
+                className={`text-lg transition duration-300 ease-in-out ${activeLink === 'contact' ? 'text-green-400' : 'hover:text-green-400'
+                  }`}
+                onClick={() => handleLinkClick('contact')}
+              >
+                Contact Us
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
       <section className="relative h-[600px] overflow-hidden">
         <div className="relative h-full">
           {combinedHeroContent?.map((item, index) => (
@@ -188,11 +276,11 @@ const HomePage: React.FC = () => {
             {featuredSection?.content.map((product, index) => (
               <div key={product.id} className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="aspect-w-16 aspect-h-9">
-                <img
-              src={serviceImages[index % serviceImages.length]}
-              alt={product.title}
-              className="w-full h-full object-cover"
-            />
+                  <img
+                    src={serviceImages[index % serviceImages.length]}
+                    alt={product.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 flex items-center bg-white/90 p-4">
                   <div className="h-full w-10 mr-2">
@@ -242,8 +330,13 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">{testimonialsSection?.sectionName}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonialsSection?.content.map((item) => (
+            {testimonialsSection?.content.map((item, index) => (
               <div key={item.id} className="bg-gray-100 rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                <img
+                  src={testimonials[index % testimonials.length]}
+                  alt={item.title}
+                  className="mx-auto mb-4 w-16 h-16"
+                />
                 <h3 className="text-xl font-semibold text-gray-800">{item.title}</h3>
                 <p className="text-gray-600 mt-2">{item.description}</p>
               </div>
@@ -252,20 +345,64 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <footer className="bg-gray-800 text-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <h3 className="text-xl font-semibold mb-4">About Us</h3>
-            <p className="text-gray-400">We are dedicated to providing the best services.</p>
-          </div>
+      {footer && (
+        <footer className="bg-gray-800 text-white py-12">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <h3 className="text-xl font-semibold mb-4">About Us</h3>
+                <p className="text-gray-400">{footer.about}</p>
+              </div>
 
-          <div>
-            <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
+                <ul>
+                  {footer.social_media_links.map((socialLink) => (
+                    <li key={socialLink.id}>
+                      <a
+                        href={socialLink.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-white transition duration-300"
+                      >
+                        {socialLink.platformName}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
+                <ul>
+                  {footer.contact_details.map((contact) => (
+                    <li key={contact.id} className="text-gray-400">
+                      <strong>{contact.contactType}:</strong> {contact.value}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <img
+                  src="https://lentoindia.com/assets/quality-control.png"
+                  alt="Quality Control"
+                  className="w-full h-auto object-contain"
+                />
+                <img
+                  src="https://lentoindia.com/assets/customer-service1.png"
+                  alt="Customer Service"
+                  className="w-full h-auto object-contain"
+                />
+                <img
+                  src="https://lentoindia.com/assets/ideaw.png"
+                  alt="Innovation"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </footer>
+        </footer>
+      )}
     </div>
   );
 };
